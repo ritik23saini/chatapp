@@ -71,10 +71,9 @@ const loginUser = async (req, res) => {
         // Generate and set the token as a cookie
         createToken(res, existingUser._id);
 
-        // Respond with user information
         return res.status(200).json({
             _id: existingUser._id,
-            username: existingUser.username, // Assuming names are stored separately
+            username: existingUser.username,
             email: existingUser.email,
         });
 
@@ -85,20 +84,17 @@ const loginUser = async (req, res) => {
 };
 const logoutUser = (req, res) => {
     if (res.cookie) {
-        res.cookie("Jwt", '', { httpOnly: true, maxAge: new Date(0) });
+        res.cookie("Jwt", -'', { httpOnly: true, maxAge: new Date(0) });
         return res.status(201).json({ message: 'Logout Success' })
     }
 
 
 }
 const sendMesage = async (req, res) => {
-    const { senderId, message, receiverId } = req.body;
 
+    const { senderId, message, } = req.body;
+    const receiverId = req.params.id;
     try {
-        // Log the incoming data for debugging
-        console.log("Sender:", senderId);
-        console.log("Receiver:", receiverId);
-        console.log("Message:", message);
 
         // Create and save the new message
         const newMessage = new messagemodel({ senderId, receiverId, message });
@@ -108,13 +104,13 @@ const sendMesage = async (req, res) => {
         let conversation = await Conversationmodel.findOne({ Participants: { $all: [senderId, receiverId] } });
 
         if (!conversation) {
-            // If no conversation exists, create a new one
+            // If no conversation exists, create a new one and since array is not created we can use {Participants: [senderId, receiverId]} to intialize array
             conversation = new Conversationmodel({ Participants: [senderId, receiverId], Messages: [newMessage._id] });
             await conversation.save();
             console.log("New conversation created:", conversation);
         } else {
             // If conversation exists, add the new message to the Messages array
-            conversation.Messages.push(newMessage._id);
+            conversation.Messages.push(newMessage._id); c
             await conversation.save();
             console.log("Message added to existing conversation:", conversation);
         }

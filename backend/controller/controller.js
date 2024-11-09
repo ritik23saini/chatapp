@@ -15,10 +15,11 @@ const createUser = async (req, res) => {
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(409).json({
+            res.status(409).json({
                 message: "User already exists",
                 status: false,
             });
+            return;
         }
         else {
             const profilePhoto = lastname ? `https://avatar.iran.liara.run/username?username=${firstname}+${lastname}` : `https://avatar.iran.liara.run/username?username=${firstname}`

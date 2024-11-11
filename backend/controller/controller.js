@@ -11,7 +11,7 @@ const createUser = async (req, res) => {
         return res.status(400).json({ message: "Please enter all fields" });
     }
 
-    const username = lastname ? (firstname + lastname) : firstname;
+    const username = lastname ? (firstname + ' ' + lastname) : firstname;
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -39,7 +39,7 @@ const createUser = async (req, res) => {
                 id: newUser._id,
                 username: newUser.username,
                 email: newUser.email,
-                profilepic: newUser.profilePhoto
+                profilePhoto: newUser.profilePhoto
             });
         }
 
@@ -76,6 +76,8 @@ const loginUser = async (req, res) => {
             _id: existingUser._id,
             username: existingUser.username,
             email: existingUser.email,
+            profilePhoto: existingUser.profilePhoto
+
         });
 
     } catch (error) {
@@ -89,6 +91,20 @@ const logoutUser = (req, res) => {
         return res.status(201).json({ message: 'Logout Success' })
     }
 
+
+}
+
+const getAllUser = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const users = await User.find({ _id: { $ne: id } }).select('username _id profilePhoto');
+        return res.status(201).json(
+            users
+        )
+
+    } catch (error) {
+        return res.status(401).json({ message: error.message })
+    }
 
 }
 const sendMesage = async (req, res) => {
@@ -125,4 +141,4 @@ const sendMesage = async (req, res) => {
 
 
 
-export { createUser, loginUser, logoutUser, sendMesage }
+export { createUser, loginUser, logoutUser, sendMesage, getAllUser }

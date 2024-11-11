@@ -1,22 +1,36 @@
 import { useState } from "react";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useDispatch } from 'react-redux'
 import { setauthuser } from "../redux/userSlice";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const Login = () => {
+
     const [loginuser, setloginuser] = useState({});
     const dispatch = useDispatch()
+    const navigate = useNavigate();
 
-    const handlelogin = (e) => {
+    const handlelogin = async (e) => {
         e.preventDefault();
-        dispatch(setauthuser(loginuser))
-        toast.success("Success Notification !");
+
+        try {
+            axios.defaults.withCredentials = true;
+            const res = await axios.post('http://localhost:3000/api/v1/users/login', loginuser);
+            dispatch(setauthuser(res.data))
+            toast.success("Logged in success");
+            navigate('/')
+
+        } catch (error) {
+            return toast.error(error.response.data.message)
+        }
 
     }
+
     const handlechange = (e) => {
         setloginuser({ ...loginuser, [e.target.id]: e.target.value })
     }
+
     return (
         <div className="h-screen grid justify-center items-center">
             <div className=" w-96 border inline-grid m-2 p-5">

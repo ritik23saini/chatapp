@@ -21,13 +21,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-
-    <div className=" h-screen text-center justify-center items-center" >
-
-      <RouterProvider router={router} />
-        
-    </div >
-
+    <RouterProvider router={router} />
   )
 }
 
